@@ -6,7 +6,8 @@
   "scripts": {
     "slither": "slither .",
     "test": "npx hardhat test",
-    "compile": "npx hardhat compile"
+    "compile": "npx hardhat compile",
+    "preinstall": "npx npm-force-resolutions"
   },
   "keywords": [],
   "author": "",

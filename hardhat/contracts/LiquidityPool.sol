@@ -76,12 +76,12 @@ contract BLXLiquidityPool is ERC20, ReentrancyGuard, Ownable {
         require(blxAmount > 0 && pairedAmount > 0, "Must provide liquidity");
 
         // Validate deposit ratio against oracle price ±5%
-        uint256 oracleRatio = (getPriceBLX() * 1e18) / getPricePaired();
+        uint256 oracleRatio = (getPriceBLX() * 1e18 * 100) / getPricePaired();
         uint256 depositRatio = (blxAmount * 1e18) / pairedAmount;
 
         require(
-            depositRatio >= (oracleRatio * 95) / 100 &&
-                depositRatio <= (oracleRatio * 105) / 100,
+            depositRatio >= (oracleRatio * 95) / 10000 &&
+                depositRatio <= (oracleRatio * 105) / 10000,
             "Deposit ratio deviates from oracle price"
         );
 
