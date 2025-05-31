@@ -8,11 +8,17 @@ contract BLXToken is ERC20, Ownable {
     uint256 public maxTxAmount;
     uint256 public cooldownTime = 60; // 60 seconds cooldown
     mapping(address => uint256) private lastTxTime;
+    mapping(address => bool) private _isExcludedFromCooldown;
 
-   constructor(uint256 initialSupply) Ownable(msg.sender) ERC20("BLUME Token", "BLX") {
-    _mint(msg.sender, initialSupply * 10 ** decimals());
-    maxTxAmount = (initialSupply * 10 ** decimals()) / 100; // 1% maxTxAmount with decimals
-   }
+    constructor(
+        uint256 initialSupply
+    ) Ownable(msg.sender) ERC20("BLUME Token", "BLX") {
+        _mint(msg.sender, initialSupply * 10 ** decimals());
+        maxTxAmount = (initialSupply * 10 ** decimals()) / 100; // 1% maxTxAmount with decimals
+
+        // Exclude deployer/owner from cooldown
+        _isExcludedFromCooldown[msg.sender] = true;
+    }
 
     modifier antiWhale(address sender, uint256 amount) {
         require(
@@ -23,12 +29,16 @@ contract BLXToken is ERC20, Ownable {
     }
 
     modifier antiBot(address sender) {
-        require(
-            block.timestamp - lastTxTime[sender] >= cooldownTime,
-            "BLX: Please wait before making another transaction"
-        );
-        _;
-        lastTxTime[sender] = block.timestamp;
+        if (!_isExcludedFromCooldown[sender]) {
+            require(
+                block.timestamp - lastTxTime[sender] >= cooldownTime,
+                "BLX: Please wait before making another transaction"
+            );
+            _;
+            lastTxTime[sender] = block.timestamp;
+        } else {
+            _; // Skip cooldown check for excluded addresses
+        }
     }
 
     function transfer(
@@ -66,5 +76,12 @@ contract BLXToken is ERC20, Ownable {
 
     function setCooldownTime(uint256 newCooldownTime) external onlyOwner {
         cooldownTime = newCooldownTime;
+    }
+
+    function setCooldownExcluded(
+        address account,
+        bool excluded
+    ) external onlyOwner {
+        _isExcludedFromCooldown[account] = excluded;
     }
 }
