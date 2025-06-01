@@ -1,0 +1,57 @@
+Deploying contracts with account: 0xBeb627B0927b0B41d09620a6d4dF1F879fDAe47D
+BLXToken deployed to: 0x0Ddb2Fe0eC57EF50FFEEDC8AA6261Ce884616b05
+PairedToken deployed to: 0xE52F498fbD3ea15Bc611e17B1A4782Db519Bc76E
+PriceFeedMock (BLX) deployed to: 0xed8440F887c1afDDee2775a5B69B0C5845469363
+PriceFeedMock (Paired) deployed to: 0xDe7f6943bE709c56A3d0EcFcA8c3fab334a85bEB
+BLXLiquidityPool deployed to: 0x4F988d6CB57ea8BCe1DB58E3f0F81A5Ae7610d6a
+BLXVault deployed to: 0x95f94627F393E669B6EB259f2440803Bf5b4d264
+BLXStaking deployed to: 0xfC25a5f51c3b2BaE2cC632fBD8B6B41202bEB53C
+BLXLiquidStaking deployed to: 0x6152f3A8596eC17F6e52Eb59449cae9b80F24144
+
+Successfully submitted source code for contract
+contracts/BLXToken.sol:BLXToken at 0x0Ddb2Fe0eC57EF50FFEEDC8AA6261Ce884616b05
+for verification on the block explorer. Waiting for verification result...
+
+Successfully verified contract BLXToken on the block explorer.
+https://sepolia.etherscan.io/address/0x0Ddb2Fe0eC57EF50FFEEDC8AA6261Ce884616b05#code
+
+The contract 0xE52F498fbD3ea15Bc611e17B1A4782Db519Bc76E has already been verified on the block explorer. If you're trying to verify a partially verified contract, please use the --force flag.
+https://sepolia.etherscan.io/address/0xE52F498fbD3ea15Bc611e17B1A4782Db519Bc76E#code
+
+Successfully submitted source code for contract
+contracts/PriceFeedMock.sol:PriceFeedMock at 0xed8440F887c1afDDee2775a5B69B0C5845469363
+for verification on the block explorer. Waiting for verification result...
+
+Successfully verified contract PriceFeedMock on the block explorer.
+https://sepolia.etherscan.io/address/0xed8440F887c1afDDee2775a5B69B0C5845469363#code
+
+The contract 0xDe7f6943bE709c56A3d0EcFcA8c3fab334a85bEB has already been verified on the block explorer. If you're trying to verify a partially verified contract, please use the --force flag.
+https://sepolia.etherscan.io/address/0xDe7f6943bE709c56A3d0EcFcA8c3fab334a85bEB#code
+
+Successfully submitted source code for contract
+contracts/LiquidityPool.sol:BLXLiquidityPool at 0x4F988d6CB57ea8BCe1DB58E3f0F81A5Ae7610d6a
+for verification on the block explorer. Waiting for verification result...
+
+Successfully verified contract BLXLiquidityPool on the block explorer.
+https://sepolia.etherscan.io/address/0x4F988d6CB57ea8BCe1DB58E3f0F81A5Ae7610d6a#code
+
+Successfully submitted source code for contract
+contracts/BLXVault.sol:BLXVault at 0x95f94627F393E669B6EB259f2440803Bf5b4d264
+for verification on the block explorer. Waiting for verification result...
+
+Successfully verified contract BLXVault on the block explorer.
+https://sepolia.etherscan.io/address/0x95f94627F393E669B6EB259f2440803Bf5b4d264#code
+
+Successfully submitted source code for contract
+contracts/BLXStaking.sol:BLXStaking at 0xfC25a5f51c3b2BaE2cC632fBD8B6B41202bEB53C
+for verification on the block explorer. Waiting for verification result...
+
+Successfully verified contract BLXStaking on the block explorer.
+https://sepolia.etherscan.io/address/0xfC25a5f51c3b2BaE2cC632fBD8B6B41202bEB53C#code
+
+Successfully submitted source code for contract
+contracts/BLXLiquidStaking.sol:BLXLiquidStaking at 0x6152f3A8596eC17F6e52Eb59449cae9b80F24144
+for verification on the block explorer. Waiting for verification result...
+
+Successfully verified contract BLXLiquidStaking on the block explorer.
+https://sepolia.etherscan.io/address/0x6152f3A8596eC17F6e52Eb59449cae9b80F24144#code
