@@ -49,17 +49,22 @@ contract BLXVault is ReentrancyGuard, AccessControl, Pausable {
         _updateRewards(msg.sender);
 
         if (amount > 0) {
-            require(
-                blxToken.transferFrom(msg.sender, address(this), amount),
-                "Transfer failed"
-            );
+            // Effects first
             userDeposit.amount += amount;
             if (lockDuration > 0) {
                 userDeposit.lockUntil = block.timestamp + lockDuration;
             }
-        }
+            userDeposit.lastUpdate = block.timestamp;
 
-        userDeposit.lastUpdate = block.timestamp;
+            // Interaction last
+            require(
+                blxToken.transferFrom(msg.sender, address(this), amount),
+                "Transfer failed"
+            );
+        } else {
+            // If no amount, still update lastUpdate
+            userDeposit.lastUpdate = block.timestamp;
+        }
 
         emit Deposited(msg.sender, amount, userDeposit.lockUntil);
     }

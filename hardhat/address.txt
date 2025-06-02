@@ -1,57 +1,59 @@
 Deploying contracts with account: 0xBeb627B0927b0B41d09620a6d4dF1F879fDAe47D
-BLXToken deployed to: 0x0Ddb2Fe0eC57EF50FFEEDC8AA6261Ce884616b05
-PairedToken deployed to: 0xE52F498fbD3ea15Bc611e17B1A4782Db519Bc76E
-PriceFeedMock (BLX) deployed to: 0xed8440F887c1afDDee2775a5B69B0C5845469363
-PriceFeedMock (Paired) deployed to: 0xDe7f6943bE709c56A3d0EcFcA8c3fab334a85bEB
-BLXLiquidityPool deployed to: 0x4F988d6CB57ea8BCe1DB58E3f0F81A5Ae7610d6a
-BLXVault deployed to: 0x95f94627F393E669B6EB259f2440803Bf5b4d264
-BLXStaking deployed to: 0xfC25a5f51c3b2BaE2cC632fBD8B6B41202bEB53C
-BLXLiquidStaking deployed to: 0x6152f3A8596eC17F6e52Eb59449cae9b80F24144
+BLXToken deployed to: 0x2fD5FaD5C9B13C871FF0CDc063A271768363917C
+PairedToken deployed to: 0x424dc328a1067F3F68d0485b7FE9f261017fd52e
+PriceFeedMock (BLX) deployed to: 0xA0E6D657B9F1E6a96d289477706A1Feb7dDde732
+PriceFeedMock (Paired) deployed to: 0xECB9F732962A561388CE3a63e4BbF079d5357356
+BLXLiquidityPool deployed to: 0x1f0b5b79A344aF532802e9c010D6429EE695f161
+BLXVault deployed to: 0xe666A2d243Bf799F0b2d8034e91363fC0021Bb79
+BLXStaking deployed to: 0x9A4c2d49B9aBa4EBcC2c29B1eB98F8c42aFB9080
+BLXLiquidStaking deployed to: 0x416E39Cc999C84699374A774f27145DAcAefFfd4
+The contract 0xB06673ba78b6505B3882135D5B304B9A938219C1 has already been verified on the block explorer. If you're trying to verify a partially verified contract, please use the --force flag.
+https://sepolia.etherscan.io/address/0xB06673ba78b6505B3882135D5B304B9A938219C1#code
+
+The contract 0x22296cd88703fD794DDFACf596694236Fb623838 has already been verified on the block explorer. If you're trying to verify a partially verified contract, please use the --force flag.
+https://sepolia.etherscan.io/address/0x22296cd88703fD794DDFACf596694236Fb623838#code
+
+The contract 0x70C1d815322210E130387f1a848969927EaEbe09 has already been verified on the block explorer. If you're trying to verify a partially verified contract, please use the --force flag.
+https://sepolia.etherscan.io/address/0x70C1d815322210E130387f1a848969927EaEbe09#code
+
+The contract 0x0A92186583aD9F449ceB246eB04c893463c90D60 has already been verified on the block explorer. If you're trying to verify a partially verified contract, please use the --force flag.
+https://sepolia.etherscan.io/address/0x0A92186583aD9F449ceB246eB04c893463c90D60#code
 
 Successfully submitted source code for contract
-contracts/BLXToken.sol:BLXToken at 0x0Ddb2Fe0eC57EF50FFEEDC8AA6261Ce884616b05
-for verification on the block explorer. Waiting for verification result...
-
-Successfully verified contract BLXToken on the block explorer.
-https://sepolia.etherscan.io/address/0x0Ddb2Fe0eC57EF50FFEEDC8AA6261Ce884616b05#code
-
-The contract 0xE52F498fbD3ea15Bc611e17B1A4782Db519Bc76E has already been verified on the block explorer. If you're trying to verify a partially verified contract, please use the --force flag.
-https://sepolia.etherscan.io/address/0xE52F498fbD3ea15Bc611e17B1A4782Db519Bc76E#code
-
-Successfully submitted source code for contract
-contracts/PriceFeedMock.sol:PriceFeedMock at 0xed8440F887c1afDDee2775a5B69B0C5845469363
-for verification on the block explorer. Waiting for verification result...
-
-Successfully verified contract PriceFeedMock on the block explorer.
-https://sepolia.etherscan.io/address/0xed8440F887c1afDDee2775a5B69B0C5845469363#code
-
-The contract 0xDe7f6943bE709c56A3d0EcFcA8c3fab334a85bEB has already been verified on the block explorer. If you're trying to verify a partially verified contract, please use the --force flag.
-https://sepolia.etherscan.io/address/0xDe7f6943bE709c56A3d0EcFcA8c3fab334a85bEB#code
-
-Successfully submitted source code for contract
-contracts/LiquidityPool.sol:BLXLiquidityPool at 0x4F988d6CB57ea8BCe1DB58E3f0F81A5Ae7610d6a
+contracts/LiquidityPool.sol:BLXLiquidityPool at 0x73010b649075f7b0f92684E4feDa8BfEDF8D9577
 for verification on the block explorer. Waiting for verification result...
 
 Successfully verified contract BLXLiquidityPool on the block explorer.
-https://sepolia.etherscan.io/address/0x4F988d6CB57ea8BCe1DB58E3f0F81A5Ae7610d6a#code
+https://sepolia.etherscan.io/address/0x73010b649075f7b0f92684E4feDa8BfEDF8D9577#code
 
 Successfully submitted source code for contract
-contracts/BLXVault.sol:BLXVault at 0x95f94627F393E669B6EB259f2440803Bf5b4d264
+contracts/BLXVault.sol:BLXVault at 0xdd6200c438d1fDB11cEAF21c265587A5970d3381
 for verification on the block explorer. Waiting for verification result...
 
 Successfully verified contract BLXVault on the block explorer.
-https://sepolia.etherscan.io/address/0x95f94627F393E669B6EB259f2440803Bf5b4d264#code
+https://sepolia.etherscan.io/address/0xdd6200c438d1fDB11cEAF21c265587A5970d3381#code
 
 Successfully submitted source code for contract
-contracts/BLXStaking.sol:BLXStaking at 0xfC25a5f51c3b2BaE2cC632fBD8B6B41202bEB53C
+contracts/BLXStaking.sol:BLXStaking at 0x00f5E325174Cf04770f8e13fC9C74E6f94E75085
 for verification on the block explorer. Waiting for verification result...
 
 Successfully verified contract BLXStaking on the block explorer.
-https://sepolia.etherscan.io/address/0xfC25a5f51c3b2BaE2cC632fBD8B6B41202bEB53C#code
+https://sepolia.etherscan.io/address/0x00f5E325174Cf04770f8e13fC9C74E6f94E75085#code
 
-Successfully submitted source code for contract
-contracts/BLXLiquidStaking.sol:BLXLiquidStaking at 0x6152f3A8596eC17F6e52Eb59449cae9b80F24144
-for verification on the block explorer. Waiting for verification result...
-
-Successfully verified contract BLXLiquidStaking on the block explorer.
-https://sepolia.etherscan.io/address/0x6152f3A8596eC17F6e52Eb59449cae9b80F24144#code
+Verification failed or skipped: ContractVerificationMissingBytecodeError: Failed to send contract verification request.
+Endpoint URL: https://api.etherscan.io/v2/api
+Reason: The Etherscan API responded that the address 0x73c23A5eF5903777121Dce7743917137c1424790 does not have bytecode.
+This can happen if the contract was recently deployed and this fact hasn't propagated to the backend yet.
+Try waiting for a minute before verifying your contract. If you are invoking this from a script,
+try to wait for five confirmations of your contract deployment transaction before running the verification subtask.
+    at Etherscan.verify (C:\Users\BUG\projects\blockChain-tests\Task_Test_Veervikram_Singh\hardhat\node_modules\@nomicfoundation\hardhat-verify\src\internal\etherscan.ts:221:13)       
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at SimpleTaskDefinition.action (C:\Users\BUG\projects\blockChain-tests\Task_Test_Veervikram_Singh\hardhat\node_modules\@nomicfoundation\hardhat-verify\src\internal\tasks\etherscan.ts:315:33)
+    at Environment._runTaskDefinition (C:\Users\BUG\projects\blockChain-tests\Task_Test_Veervikram_Singh\hardhat\node_modules\hardhat\src\internal\core\runtime-environment.ts:351:14)  
+    at Environment.run (C:\Users\BUG\projects\blockChain-tests\Task_Test_Veervikram_Singh\hardhat\node_modules\hardhat\src\internal\core\runtime-environment.ts:184:14)
+    at SimpleTaskDefinition.action (C:\Users\BUG\projects\blockChain-tests\Task_Test_Veervikram_Singh\hardhat\node_modules\@nomicfoundation\hardhat-verify\src\internal\tasks\etherscan.ts:169:7)
+    at Environment._runTaskDefinition (C:\Users\BUG\projects\blockChain-tests\Task_Test_Veervikram_Singh\hardhat\node_modules\hardhat\src\internal\core\runtime-environment.ts:351:14)  
+    at Environment.run (C:\Users\BUG\projects\blockChain-tests\Task_Test_Veervikram_Singh\hardhat\node_modules\hardhat\src\internal\core\runtime-environment.ts:184:14)
+    at SimpleTaskDefinition.action (C:\Users\BUG\projects\blockChain-tests\Task_Test_Veervikram_Singh\hardhat\node_modules\@nomicfoundation\hardhat-verify\src\index.ts:313:9)
+    at Environment._runTaskDefinition (C:\Users\BUG\projects\blockChain-tests\Task_Test_Veervikram_Singh\hardhat\node_modules\hardhat\src\internal\core\runtime-environment.ts:351:14)  
+(venv)

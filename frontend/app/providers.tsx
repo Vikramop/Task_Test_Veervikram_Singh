@@ -25,6 +25,22 @@ import { WagmiProvider } from 'wagmi';
 
 const { wallets } = getDefaultWallets();
 
+const hardhatLocal: Chain = {
+  id: 31337,
+  name: 'Hardhat Local',
+  network: 'hardhat-local',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Ether',
+    symbol: 'ETH',
+  },
+  rpcUrls: {
+    default: { http: ['http://127.0.0.1:8545'] },
+    public: { http: ['http://127.0.0.1:8545'] },
+  },
+  testnet: true,
+};
+
 const config = getDefaultConfig({
   appName: 'RainbowKit demo',
   projectId: '4f73d6137c44bbfb16139a7f38dc7bcf',
@@ -41,6 +57,7 @@ const config = getDefaultConfig({
     optimism,
     arbitrum,
     base,
+    hardhatLocal,
     ...(process.env.NEXT_PUBLIC_ENABLE_TESTNETS === 'true' ? [sepolia] : []),
   ],
   // ssr: true,

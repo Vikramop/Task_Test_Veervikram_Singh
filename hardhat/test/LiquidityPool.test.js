@@ -7,9 +7,6 @@ describe('BLXLiquidityPool', function () {
   let blxToken, pairedToken, priceFeedBLX, priceFeedPaired, lpContract;
   let owner, user1, user2;
 
-  const initialSupply = ethers.parseEther('1000000');
-  const userInitialBalance = ethers.parseEther('10000');
-
   beforeEach(async function () {
     [owner, user1, user2] = await ethers.getSigners();
 

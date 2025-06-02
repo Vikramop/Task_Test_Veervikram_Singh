@@ -16,6 +16,7 @@ contract BLXLiquidityPool is ERC20, ReentrancyGuard, Ownable {
 
     uint256 public reserveBLX;
     uint256 public reservePaired;
+    uint256 public reserveETH;
 
     uint256 public feeRate = 30; // 0.3%
     uint256 public constant FEE_DENOMINATOR = 10000;
@@ -41,6 +42,8 @@ contract BLXLiquidityPool is ERC20, ReentrancyGuard, Ownable {
     );
     event FeeRateUpdated(uint256 newFeeRate);
 
+    receive() external payable {}
+
     constructor(
         address _blxToken,
         address _pairedToken,
@@ -58,7 +61,7 @@ contract BLXLiquidityPool is ERC20, ReentrancyGuard, Ownable {
     function getPriceBLX() public view returns (uint256) {
         (, int256 price, , , ) = priceFeedBLX.latestRoundData();
         require(price > 0, "Invalid BLX price");
-        return uint256(price) * 1e10; // Adjust decimals (Chainlink usually 8 decimals)
+        return uint256(price) * 1e10;
     }
 
     function getPricePaired() public view returns (uint256) {
@@ -70,89 +73,95 @@ contract BLXLiquidityPool is ERC20, ReentrancyGuard, Ownable {
     // --- Liquidity functions ---
 
     function addLiquidity(
-        uint256 blxAmount,
-        uint256 pairedAmount
-    ) external nonReentrant returns (uint256 lpTokensMinted) {
-        require(blxAmount > 0 && pairedAmount > 0, "Must provide liquidity");
+        uint256 blxAmount
+    ) external payable nonReentrant returns (uint256 lpTokensMinted) {
+        uint256 ethAmount = msg.value;
+        require(blxAmount > 0 && ethAmount > 0, "Must provide liquidity");
 
-        // Validate deposit ratio against oracle price ±5%
-        uint256 oracleRatio = (getPriceBLX() * 1e18 * 100) / getPricePaired();
-        uint256 depositRatio = (blxAmount * 1e18) / pairedAmount;
-
-        require(
-            depositRatio >= (oracleRatio * 95) / 10000 &&
-                depositRatio <= (oracleRatio * 105) / 10000,
-            "Deposit ratio deviates from oracle price"
-        );
-
+        // Transfer BLX tokens from sender
         require(
             blxToken.transferFrom(msg.sender, address(this), blxAmount),
             "BLX transfer failed"
-        );
-        require(
-            pairedToken.transferFrom(msg.sender, address(this), pairedAmount),
-            "Paired token transfer failed"
         );
 
         uint256 totalSupply = totalSupply();
 
         if (totalSupply == 0) {
-            lpTokensMinted = sqrt(blxAmount * pairedAmount);
+            // Initial liquidity provider mints sqrt of product of amounts
+            lpTokensMinted = sqrt(blxAmount * ethAmount);
+            require(lpTokensMinted > 0, "Insufficient liquidity minted");
         } else {
+            // Calculate proportional LP tokens from each token's contribution
             uint256 lpFromBLX = (blxAmount * totalSupply) / reserveBLX;
-            uint256 lpFromPaired = (pairedAmount * totalSupply) / reservePaired;
-            require(lpFromBLX == lpFromPaired, "Unequal value deposits");
-            lpTokensMinted = lpFromBLX;
+            uint256 lpFromETH = (ethAmount * totalSupply) / reserveETH;
+
+            // Mint LP tokens based on the smaller contribution to maintain pool ratio
+            lpTokensMinted = lpFromBLX < lpFromETH ? lpFromBLX : lpFromETH;
+            require(lpTokensMinted > 0, "Insufficient liquidity minted");
+
+            // Calculate the actual amounts of tokens to be added based on lpTokensMinted
+            uint256 blxUsed = (lpTokensMinted * reserveBLX) / totalSupply;
+            uint256 ethUsed = (lpTokensMinted * reserveETH) / totalSupply;
+
+            // Refund excess BLX tokens to sender if any
+            if (blxAmount > blxUsed) {
+                uint256 blxRefund = blxAmount - blxUsed;
+                require(
+                    blxToken.transfer(msg.sender, blxRefund),
+                    "BLX refund failed"
+                );
+                blxAmount = blxUsed;
+            }
+
+            // Refund excess ETH to sender if any
+            if (ethAmount > ethUsed) {
+                uint256 ethRefund = ethAmount - ethUsed;
+                (bool success, ) = msg.sender.call{value: ethRefund}("");
+                require(success, "ETH refund failed");
+                ethAmount = ethUsed;
+            }
         }
 
-        require(lpTokensMinted > 0, "Insufficient liquidity minted");
-
+        // Update reserves with actual amounts used
         reserveBLX += blxAmount;
-        reservePaired += pairedAmount;
+        reserveETH += ethAmount;
 
+        // Mint LP tokens to liquidity provider
         _mint(msg.sender, lpTokensMinted);
 
-        emit LiquidityAdded(
-            msg.sender,
-            blxAmount,
-            pairedAmount,
-            lpTokensMinted
-        );
+        emit LiquidityAdded(msg.sender, blxAmount, ethAmount, lpTokensMinted);
+
         return lpTokensMinted;
     }
 
     function removeLiquidity(
         uint256 lpTokenAmount
-    ) external nonReentrant returns (uint256 blxAmount, uint256 pairedAmount) {
+    ) external nonReentrant returns (uint256 blxAmount, uint256 ethAmount) {
         require(lpTokenAmount > 0, "Must burn LP tokens");
         uint256 totalSupply = totalSupply();
 
         blxAmount = (reserveBLX * lpTokenAmount) / totalSupply;
-        pairedAmount = (reservePaired * lpTokenAmount) / totalSupply;
+        ethAmount = (reservePaired * lpTokenAmount) / totalSupply;
 
-        require(blxAmount > 0 && pairedAmount > 0, "Insufficient amounts");
+        require(blxAmount > 0 && ethAmount > 0, "Insufficient amounts");
 
         _burn(msg.sender, lpTokenAmount);
 
         reserveBLX -= blxAmount;
-        reservePaired -= pairedAmount;
+        reservePaired -= ethAmount;
 
         require(
             blxToken.transfer(msg.sender, blxAmount),
             "BLX transfer failed"
         );
-        require(
-            pairedToken.transfer(msg.sender, pairedAmount),
-            "Paired token transfer failed"
-        );
 
-        emit LiquidityRemoved(
-            msg.sender,
-            blxAmount,
-            pairedAmount,
-            lpTokenAmount
-        );
-        return (blxAmount, pairedAmount);
+        // If paired token is native ETH, send ETH directly
+        (bool success, ) = msg.sender.call{value: ethAmount}("");
+        require(success, "ETH transfer failed");
+
+        emit LiquidityRemoved(msg.sender, blxAmount, ethAmount, lpTokenAmount);
+
+        return (blxAmount, ethAmount);
     }
 
     // --- Swap function split to avoid stack too deep ---
@@ -175,80 +184,77 @@ contract BLXLiquidityPool is ERC20, ReentrancyGuard, Ownable {
         address inputToken,
         uint256 inputAmount,
         uint256 minOutputAmount
-    ) external nonReentrant returns (uint256) {
+    ) external payable nonReentrant returns (uint256) {
         require(inputAmount > 0, "Input amount zero");
         require(
-            inputToken == address(blxToken) ||
-                inputToken == address(pairedToken),
+            inputToken == address(blxToken) || inputToken == address(0),
             "Invalid input token"
         );
 
-        SwapVars memory vars;
-
         bool isInputBLX = (inputToken == address(blxToken));
-        IERC20 tokenIn = isInputBLX ? blxToken : pairedToken;
-        IERC20 tokenOut = isInputBLX ? pairedToken : blxToken;
+        uint256 ethInputAmount = 0;
 
-        require(
-            tokenIn.transferFrom(msg.sender, address(this), inputAmount),
-            "Input token transfer failed"
-        );
+        if (isInputBLX) {
+            // Input token is BLX (ERC20)
+            require(msg.value == 0, "ETH should not be sent when swapping BLX");
+            require(
+                blxToken.transferFrom(msg.sender, address(this), inputAmount),
+                "BLX transfer failed"
+            );
+        } else {
+            // Input token is ETH (native)
+            require(msg.value == inputAmount, "ETH amount mismatch");
+            ethInputAmount = msg.value;
+        }
 
-        vars.feeAmount = (inputAmount * feeRate) / FEE_DENOMINATOR;
-        vars.inputAmountAfterFee = inputAmount - vars.feeAmount;
+        uint256 feeAmount = (inputAmount * feeRate) / FEE_DENOMINATOR;
+        uint256 inputAmountAfterFee = inputAmount - feeAmount;
 
-        vars.reserveIn = isInputBLX ? reserveBLX : reservePaired;
-        vars.reserveOut = isInputBLX ? reservePaired : reserveBLX;
+        uint256 reserveIn = isInputBLX ? reserveBLX : reservePaired;
+        uint256 reserveOut = isInputBLX ? reservePaired : reserveBLX;
 
         // Calculate output amount using constant product formula
-        vars.numerator = vars.inputAmountAfterFee * vars.reserveOut;
-        vars.denominator = vars.reserveIn + vars.inputAmountAfterFee;
-        vars.outputAmount = vars.numerator / vars.denominator;
+        uint256 numerator = inputAmountAfterFee * reserveOut;
+        uint256 denominator = reserveIn + inputAmountAfterFee;
+        uint256 outputAmount = numerator / denominator;
 
+        require(outputAmount >= minOutputAmount, "Slippage limit exceeded");
         require(
-            vars.outputAmount >= minOutputAmount,
-            "Slippage limit exceeded"
-        );
-        require(
-            vars.outputAmount > 0 && vars.outputAmount < vars.reserveOut,
+            outputAmount > 0 && outputAmount < reserveOut,
             "Invalid output amount"
         );
 
-        // Oracle price check ±5%
-        vars.oraclePriceIn = isInputBLX ? getPriceBLX() : getPricePaired();
-        vars.oraclePriceOut = isInputBLX ? getPricePaired() : getPriceBLX();
-
-        vars.oracleRatio = (vars.oraclePriceIn * 1e18) / vars.oraclePriceOut;
-        vars.swapPrice = (vars.inputAmountAfterFee * 1e18) / vars.outputAmount;
-
-        require(
-            vars.swapPrice >= (vars.oracleRatio * 95) / 100 &&
-                vars.swapPrice <= (vars.oracleRatio * 105) / 100,
-            "Swap price deviates from oracle price"
-        );
-
-        // Update reserves including fees (fees stay in the pool)
+        // Update reserves
         if (isInputBLX) {
             reserveBLX += inputAmount;
-            reservePaired -= vars.outputAmount;
+            reservePaired -= outputAmount;
         } else {
             reservePaired += inputAmount;
-            reserveBLX -= vars.outputAmount;
+            reserveBLX -= outputAmount;
         }
 
-        require(
-            tokenOut.transfer(msg.sender, vars.outputAmount),
-            "Output token transfer failed"
-        );
+        // Transfer output tokens
+        if (isInputBLX) {
+            // Output is ETH, send via call
+            (bool success, ) = msg.sender.call{value: outputAmount}("");
+            require(success, "ETH transfer failed");
+        } else {
+            // Output is BLX token
+            require(
+                blxToken.transfer(msg.sender, outputAmount),
+                "BLX transfer failed"
+            );
+        }
 
         emit Swap(
             msg.sender,
             inputToken,
             inputAmount,
-            address(tokenOut),
-            vars.outputAmount
+            isInputBLX ? address(0) : address(blxToken),
+            outputAmount
         );
-        return vars.outputAmount;
+
+        return outputAmount;
     }
 
     // --- Owner functions ---
@@ -275,6 +281,6 @@ contract BLXLiquidityPool is ERC20, ReentrancyGuard, Ownable {
     }
 
     function getReserves() external view returns (uint256, uint256) {
-        return (reserveBLX, reservePaired);
+        return (reserveBLX, reserveETH);
     }
 }

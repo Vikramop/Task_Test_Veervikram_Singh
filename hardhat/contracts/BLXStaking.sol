@@ -52,22 +52,20 @@ contract BLXStaking is ReentrancyGuard, Ownable {
 
         StakeInfo storage stakeInfo = stakes[msg.sender];
 
-        // Pay out any pending rewards before changing stake
+        // Effects: update state first
+        stakeInfo.amount += amount;
+        stakeInfo.startTimestamp = block.timestamp;
+        stakeInfo.rewardDebt = 0;
+        totalStaked += amount;
+
+        // Interaction: pay rewards after state update
         _payReward(msg.sender);
 
-        // Transfer tokens
+        // Interaction: transfer tokens last
         require(
             blxToken.transferFrom(msg.sender, address(this), amount),
             "Transfer failed"
         );
-
-        stakeInfo.amount += amount;
-        stakeInfo.startTimestamp = block.timestamp;
-
-        // Reset rewardDebt to current total rewards (which should be zero after payout)
-        stakeInfo.rewardDebt = 0;
-
-        totalStaked += amount;
 
         emit Staked(msg.sender, amount);
     }
@@ -79,9 +77,6 @@ contract BLXStaking is ReentrancyGuard, Ownable {
             "Invalid unstake amount"
         );
 
-        // Pay out pending rewards before unstaking
-        _payReward(msg.sender);
-
         uint256 stakingDuration = block.timestamp - stakeInfo.startTimestamp;
         uint256 penalty = 0;
 
@@ -89,6 +84,10 @@ contract BLXStaking is ReentrancyGuard, Ownable {
             penalty = (amount * earlyWithdrawalPenaltyBps) / 10000;
         }
 
+        // Calculate reward before state changes
+        uint256 reward = pendingReward(msg.sender);
+
+        // Effects: update state variables before external calls
         stakeInfo.amount -= amount;
 
         if (stakeInfo.amount == 0) {
@@ -99,17 +98,24 @@ contract BLXStaking is ReentrancyGuard, Ownable {
 
         totalStaked -= amount;
 
+        // Reset rewardDebt before external calls
+        stakeInfo.rewardDebt = 0;
+
         uint256 amountAfterPenalty = amount - penalty;
+
+        // Interactions: external calls last
+        if (reward > 0) {
+            require(
+                rewardToken.transfer(msg.sender, reward),
+                "Reward transfer failed"
+            );
+            emit RewardPaid(msg.sender, reward);
+        }
 
         require(
             blxToken.transfer(msg.sender, amountAfterPenalty),
             "Transfer failed"
         );
-
-        // Penalty tokens stay in contract or can be handled here
-
-        // Reset rewardDebt after unstake
-        stakeInfo.rewardDebt = 0;
 
         emit Unstaked(msg.sender, amountAfterPenalty, penalty);
     }
@@ -152,7 +158,7 @@ contract BLXStaking is ReentrancyGuard, Ownable {
 
     /// @notice Calculate pending rewards for a user
     function _payReward(address user) internal {
-        StakeInfo storage stakeInfo = stakes[user];
+        // StakeInfo storage stakeInfo = stakes[user];
         uint256 reward = pendingReward(user);
         if (reward > 0) {
             require(
