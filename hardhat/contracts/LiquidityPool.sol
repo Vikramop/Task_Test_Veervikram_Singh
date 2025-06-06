@@ -141,21 +141,20 @@ contract BLXLiquidityPool is ERC20, ReentrancyGuard, Ownable {
         uint256 totalSupply = totalSupply();
 
         blxAmount = (reserveBLX * lpTokenAmount) / totalSupply;
-        ethAmount = (reservePaired * lpTokenAmount) / totalSupply;
+        ethAmount = (reserveETH * lpTokenAmount) / totalSupply;
 
         require(blxAmount > 0 && ethAmount > 0, "Insufficient amounts");
 
         _burn(msg.sender, lpTokenAmount);
 
         reserveBLX -= blxAmount;
-        reservePaired -= ethAmount;
+        reserveETH -= ethAmount;
 
         require(
             blxToken.transfer(msg.sender, blxAmount),
             "BLX transfer failed"
         );
 
-        // If paired token is native ETH, send ETH directly
         (bool success, ) = msg.sender.call{value: ethAmount}("");
         require(success, "ETH transfer failed");
 
@@ -210,8 +209,9 @@ contract BLXLiquidityPool is ERC20, ReentrancyGuard, Ownable {
         uint256 feeAmount = (inputAmount * feeRate) / FEE_DENOMINATOR;
         uint256 inputAmountAfterFee = inputAmount - feeAmount;
 
-        uint256 reserveIn = isInputBLX ? reserveBLX : reservePaired;
-        uint256 reserveOut = isInputBLX ? reservePaired : reserveBLX;
+        // Use reserveETH instead of reservePaired
+        uint256 reserveIn = isInputBLX ? reserveBLX : reserveETH;
+        uint256 reserveOut = isInputBLX ? reserveETH : reserveBLX;
 
         // Calculate output amount using constant product formula
         uint256 numerator = inputAmountAfterFee * reserveOut;
@@ -227,9 +227,9 @@ contract BLXLiquidityPool is ERC20, ReentrancyGuard, Ownable {
         // Update reserves
         if (isInputBLX) {
             reserveBLX += inputAmount;
-            reservePaired -= outputAmount;
+            reserveETH -= outputAmount;
         } else {
-            reservePaired += inputAmount;
+            reserveETH += inputAmount;
             reserveBLX -= outputAmount;
         }
 
